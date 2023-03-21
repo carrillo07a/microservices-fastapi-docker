@@ -1,0 +1,78 @@
+version: "3.9"
+networks:
+  backend:
+    driver: bridge
+services:
+  reverse-proxy:
+    image: nginx:latest
+    container_name: reverse_proxy_demo
+    depends_on:
+      - book_service
+      - blacklist_service
+      - blog_service
+    volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - '80:80'
+    networks:
+      - backend
+  book_service:
+    container_name: 'book_service'
+    build:
+      context: ./book
+    ports:
+      - '5001:5001'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 5001
+  book_service_2:
+    container_name: 'book_service_2'
+    build:
+      context: ./book
+    ports:
+      - '5002:5002'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 5002
+  book_service_3:
+    container_name: 'book_service_3'
+    build:
+      context: ./book
+    ports:
+      - '5003:5003'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 5003
+  blacklist_service:
+    container_name: 'blacklist_service'
+    build:
+      context: ./blacklist
+    ports:
+      - '6001:6001'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 6001
+  blog_service:
+    container_name: 'blog_service'
+    build:
+      context: ./blog
+    ports:
+      - '7001:7001'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 7001
+  blog_service_2:
+    container_name: 'blog_service_2'
+    build:
+      context: ./blog
+    ports:
+      - '7002:7002'
+    restart: on-failure
+    networks:
+      - backend
+    command: uvicorn main:app --reload --host 0.0.0.0 --port 7002
